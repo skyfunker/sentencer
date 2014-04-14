@@ -1,0 +1,38 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.cwport.sentencer.CardActivity">
+
+    <item android:id="@+id/action_shuffle"
+        android:title="@string/action_shuffle"
+        android:orderInCategory="100"
+        android:checkable="true"
+        android:checked="false"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/action_showmarked"
+        android:title="@string/action_showmarked"
+        android:orderInCategory="200"
+        android:icon="@drawable/ic_action_showmarked"
+        android:checkable="true"
+        android:checked="false"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/action_showbackfirst"
+        android:title="@string/action_show_back_first"
+        android:orderInCategory="200"
+        android:checkable="true"
+        android:checked="false"
+        app:showAsAction="never" />
+
+    <!--<item android:id="@+id/action_settings"-->
+        <!--android:title="@string/action_settings"-->
+        <!--android:orderInCategory="300"-->
+        <!--app:showAsAction="never" />-->
+
+    <item android:id="@+id/action_help"
+        android:title="@string/action_help"
+        android:icon="@drawable/ic_action_help"
+        android:orderInCategory="400"
+        app:showAsAction="ifRoom" />
+</menu>

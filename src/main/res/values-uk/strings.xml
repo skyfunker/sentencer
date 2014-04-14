@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Sentencer</string>
+    <string name="help_file">file:///android_asset/help-uk.html</string>
+    <string name="action_settings">Налаштування</string>
+    <string name="action_help">Допомога</string>
+    <string name="title_how_to_show_cards">Режим відображення</string>
+    <string name="action_show_face_first">Питання - Вiдповiдь</string>
+    <string name="action_show_back_first">Вiдповiдь - Питання</string>
+    <array name="card_sides">
+        <item>Питання - Вiдповiдь</item>
+        <item>Вiдповiдь - Питання</item>
+    </array>
+    <string name="title_activity_help">Допомога</string>
+    <string name="title_activity_card">Картка</string>
+    <string name="button_title_prev">Поперед.</string>
+    <string name="button_title_flip">Поворот</string>
+    <string name="button_title_next">Наступ.</string>
+    <string name="action_showmarked">Помiченi</string>
+    <string name="action_markcard">Помітити</string>
+    <string name="action_unmark">Зняти позначку</string>
+    <string name="action_shuffle">Перемішати</string>
+    <string name="pref_title_savestate" />
+    <string name="pref_summary_savemarked" />
+    <string name="pref_title_savemarked" />
+    <string name="pref_title_username" />
+    <string name="pref_summary_saveappstate" />
+    <string name="pref_title_saveappstate" />
+    <string name="msg_no_cards">Нема карток в наборi</string>
+    <string name="label_cards">Карток</string>
+</resources>
