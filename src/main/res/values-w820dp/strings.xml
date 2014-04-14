@@ -13,4 +13,5 @@
     <string name="pref_title_savemarked" />
     <string name="pref_title_username" />
     <string name="label_cards" />
+    <string name="action_play">Play</string>
 </resources>

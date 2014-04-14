@@ -2,6 +2,8 @@ package com.cwport.sentencer;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -9,14 +11,22 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cwport.sentencer.data.DataException;
 import com.cwport.sentencer.data.DataHelper;
 import com.cwport.sentencer.data.DataManager;
 import com.cwport.sentencer.model.Card;
+import com.cwport.sentencer.model.Lesson;
+import com.cwport.sentencer.speak.Speaker;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -32,14 +42,17 @@ public class CardActivity extends ActionBarActivity {
     private int cardCount = 0;
     private boolean flip = false;
     private ArrayList<Card> cards = new ArrayList<Card>();
+    private Lesson lesson = new Lesson();
     private TextView textView;
     private ImageButton btnNext;
     private ImageButton btnFlip;
     private ImageButton btnPrev;
+    private Button btnPlay;
     private boolean showMarked = false;
     private boolean shuffled = false;
     private boolean showBackFirst = false;
     private boolean forceRewind = false;
+    private String textLocale; // text locale of the current card side
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +74,14 @@ public class CardActivity extends ActionBarActivity {
                 return false;
             }
         });
+        this.btnPlay = (Button) findViewById(R.id.button_play);
+        this.btnPlay.setOnClickListener( new View.OnClickListener() {
+                 @Override
+                 public void onClick(View v) {
+                     textToSpeech(v, textLocale, textView.getText().toString());
+                 }
+             }
+        );
         this.btnPrev = (ImageButton) findViewById(R.id.button_prev);
         this.btnFlip = (ImageButton) findViewById(R.id.button_flip);
         this.btnNext = (ImageButton) findViewById(R.id.button_next);
@@ -73,7 +94,6 @@ public class CardActivity extends ActionBarActivity {
         }
         try {
             initCards();
-//            initNavigation();
             showCard();
         } catch(DataException de) {
             Log.e(TAG, de.getMessage());
@@ -94,7 +114,8 @@ public class CardActivity extends ActionBarActivity {
     }
 
     private void initCards() throws DataException {
-        this.cards = new ArrayList<Card>(DataManager.getInstance().getLesson(this.lessonIndex).getCards());
+        this.lesson = DataManager.getInstance().getLesson(this.lessonIndex);
+        this.cards = new ArrayList<Card>(lesson.getCards());
         if(this.showMarked) {
             Iterator<Card> iterator = this.cards.iterator();
             while(iterator.hasNext()) {
@@ -115,18 +136,27 @@ public class CardActivity extends ActionBarActivity {
             this.btnPrev.setVisibility(View.INVISIBLE);
             this.btnFlip.setVisibility(View.INVISIBLE);
             this.btnNext.setVisibility(View.INVISIBLE);
+            this.btnPlay.setVisibility(View.INVISIBLE);
+            this.btnPlay.setVisibility(View.INVISIBLE);
             return;
         }
         this.btnPrev.setVisibility(this.cardIndex > 0 ? View.VISIBLE : View.INVISIBLE);
         this.btnFlip.setVisibility(View.VISIBLE);
         this.btnNext.setVisibility((this.cardIndex + 1) < this.cardCount ? View.VISIBLE : View.INVISIBLE);
         this.setTitle(this.lessonTitle + " (" + (this.cardIndex + 1)  + "/" + this.cardCount + ")");
+        if(Speaker.localeSupported(this.textLocale)) {
+            this.btnPlay.setVisibility(View.VISIBLE);
+        } else {
+            this.btnPlay.setVisibility(View.INVISIBLE);
+        }
     }
     private void showCard() {
         if(this.flip) {
             textView.setText(cards.get(this.cardIndex).getBackText());
+            this.textLocale = this.lesson.getBackLocale();
         } else {
             textView.setText(cards.get(this.cardIndex).getFaceText());
+            this.textLocale = this.lesson.getFaceLocale();
         }
         if(cards.get(this.cardIndex).getMarked()) {
             this.textView.setTextColor(Color.parseColor("#FFBB33"));
@@ -141,7 +171,6 @@ public class CardActivity extends ActionBarActivity {
         if(( this.cardIndex + 1) < this.cardCount) {
             this.cardIndex++;
         }
-//        initNavigation();
         showCard();
     }
 
@@ -150,7 +179,6 @@ public class CardActivity extends ActionBarActivity {
         if(this.cardIndex > 0) {
             this.cardIndex--;
         }
-//        initNavigation();
         showCard();
     }
 
@@ -219,7 +247,6 @@ public class CardActivity extends ActionBarActivity {
     private void showBackFirst() {
         try {
             initCards();
-//            initNavigation();
             this.flip = this.showBackFirst;
             if(this.cards.size() > 0) {
                 showCard();
@@ -236,7 +263,6 @@ public class CardActivity extends ActionBarActivity {
         this.forceRewind = true;
         try {
             initCards();
-//            initNavigation();
             if(this.cards.size() > 0) {
                 showCard();
             } else {
@@ -251,7 +277,6 @@ public class CardActivity extends ActionBarActivity {
         this.forceRewind = true;
         try {
             initCards();
-//            initNavigation();
             if(this.cards.size() > 0) {
                 showCard();
             } else {
@@ -273,5 +298,39 @@ public class CardActivity extends ActionBarActivity {
     private void showHelp() {
         Intent helpIntent = new Intent(this, HelpActivity.class);
         startActivity(helpIntent);
+    }
+
+    private void textToSpeech(View view, String locale, String text) {
+        String url;
+        try {
+            url = "http://translate.google.com/translate_tts?tl=" + locale +
+                    "&q=" + java.net.URLEncoder.encode(text, "UTF-8");
+        } catch(UnsupportedEncodingException uex) {
+            Log.e(TAG, uex.getMessage());
+            return;
+        }
+        MediaPlayer mediaPlayer = new MediaPlayer();
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                btnPlay.setEnabled(true);
+            }
+        });
+        mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+
+                return false;
+            }
+        });
+        try {
+            this.btnPlay.setEnabled(false);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepare(); // might take long! (for buffering, etc)
+            mediaPlayer.start();
+        } catch(IOException ex) {
+            Log.e(TAG, ex.getLocalizedMessage());
+        }
     }
 }
