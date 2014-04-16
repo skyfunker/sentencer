@@ -21,18 +21,20 @@
     <Button
         android:id="@+id/button_play"
         android:text="@string/action_play"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="48dp"
         android:visibility="invisible"
         />
     <TextView
         android:textSize="@dimen/text_size_question"
+        android:scrollbars="vertical"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:id="@+id/card_text"
         android:gravity="center"
         android:layout_centerVertical="true"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
 
     <RelativeLayout
         android:layout_alignParentBottom="true"

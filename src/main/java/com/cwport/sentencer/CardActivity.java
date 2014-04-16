@@ -1,9 +1,12 @@
 package com.cwport.sentencer;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +33,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 
 
@@ -78,7 +84,12 @@ public class CardActivity extends ActionBarActivity {
         this.btnPlay.setOnClickListener( new View.OnClickListener() {
                  @Override
                  public void onClick(View v) {
-                     textToSpeech(v, textLocale, textView.getText().toString());
+                     if(CommonUtils.isConnectedOrConnectingToNetwork(getApplicationContext())) {
+                         textToSpeech(v, textLocale, textView.getText().toString());
+                     } else {
+                         Toast.makeText(getApplicationContext(), R.string.msg_no_internet_connection,
+                                 Toast.LENGTH_LONG).show();
+                     }
                  }
              }
         );
@@ -195,6 +206,8 @@ public class CardActivity extends ActionBarActivity {
             MenuItem item = menu.getItem(i);
             int id = item.getItemId();
             switch (id) {
+                case R.id.action_goto:
+                    break;
                 case R.id.action_showmarked:
                     item.setChecked(this.showMarked);
                     break;
@@ -216,6 +229,9 @@ public class CardActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch (id) {
+            case R.id.action_goto:
+                goTo();
+                break;
             case R.id.action_showmarked:
                 this.showMarked = !this.showMarked;
                 item.setChecked(this.showMarked);
@@ -242,6 +258,37 @@ public class CardActivity extends ActionBarActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Build and show position selection dialog and navigate to selected position
+     */
+    private void goTo() {
+        final AlertDialog.Builder gotoDialog = new AlertDialog.Builder(this);
+        gotoDialog.setTitle(R.string.action_goto);
+        final NumberPicker numberPicker = new NumberPicker(this);
+        numberPicker.setMaxValue(this.cardCount);
+        numberPicker.setMinValue(1);
+        numberPicker.setValue(this.cardIndex + 1);
+        gotoDialog.setView(numberPicker);
+        // Set the action buttons
+        gotoDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK, so save the mSelectedItems results somewhere
+                // or return them to the component that opened the dialog
+                cardIndex = numberPicker.getValue() - 1;
+                showCard();
+                return;
+            }
+        });
+        gotoDialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                return;
+            }
+        });
+        gotoDialog.show();
     }
 
     private void showBackFirst() {
@@ -327,6 +374,9 @@ public class CardActivity extends ActionBarActivity {
             this.btnPlay.setEnabled(false);
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setDataSource(url);
+//            HashMap<String, String> headers = new HashMap<String, String>();
+//            headers.put("Accept-Language", this.textLocale.replace("_", "-"));
+//            mediaPlayer.setDataSource(this, Uri.parse(url), headers);
             mediaPlayer.prepare(); // might take long! (for buffering, etc)
             mediaPlayer.start();
         } catch(IOException ex) {

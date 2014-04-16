@@ -134,10 +134,9 @@ public class FileDataProvider implements DataProvider {
             CSVReader reader = new CSVReader(new InputStreamReader(stream), ';', '\"', 0);
             String [] nextLine;
             while ((nextLine = reader.readNext()) != null) {
-                String faceText = nextLine[0];
-                String backText = nextLine[1];
+                String faceText = nextLine[0].trim();
+                String backText = nextLine[1].trim();
                 Card c = new Card("", faceText, backText, false);
-                // Log.d(TAG, c.toString());
                 cards.add(c);
             }
             reader.close();

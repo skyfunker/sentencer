@@ -18,6 +18,29 @@ public class Speaker {
     // http://stackoverflow.com/questions/14257598/what-are-language-codes-for-voice-recognition-languages-in-chromes-implementati
     public static final String supportedLocales[] = {
             "en_US",
+            "sv_SE", // + Swedish
+            "cs", // + Czech
+            "nl_NL", // + Dutch
+            "fi", //    + Finnish
+            "fr_FR", // + French
+            "gl", //    + Galician
+            "de_DE", // + German
+            "pt_PT", // + Portuguese
+            "ro_RO", // + Romanian
+//            "ru_RU",
+            "sr_SP",  //+ Serbian
+            "sk", //    + Slovak
+            "es_ES", // All Spanish
+            "cs", // + Czech
+            "nl_NL", // + Dutch
+            "fi", //    + Finnish
+            "fr_FR", // + French
+            "gl", //    + Galician
+            "de_DE", // + German
+            "he", //     + Hebrew
+            "hu", //     + Hungarian
+            "is", //     + Icelandic
+            "it_IT" //  + Italian
         /*
             + English (Australia) en-AU
             +? English (Canada) en-CA
@@ -26,7 +49,6 @@ public class Speaker {
             + English (South Africa) en-ZA
             + English(UK) en-GB
             + English(US) en-US
-        */
             "af", // + Afrikaans
             "eu", // + Basque
             "bg", // + Bulgarian
@@ -46,7 +68,7 @@ public class Speaker {
             .+ Arabic (Oman) ar-OM
             .+ Arabic (Saudi Arabia) ar-SA
             .+ Arabic (Tunisia) ar-TN
-            .+ Arabic (Yemen) ar-YE */
+            .+ Arabic (Yemen) ar-YE
             "cs", // + Czech
             "nl_NL", // + Dutch
             "fi", //    + Finnish
@@ -69,15 +91,14 @@ public class Speaker {
             "ms_MY", //     + Malaysian
             "no_NO", //     + Norwegian
             "pl", //     + Polish
-        /*    +? Pig Latin xx-piglatin */
+            +? Pig Latin xx-piglatin
             "pt_PT", //    + Portuguese
             "pt_BR", // .+ Portuguese (brasil)
             "ro_RO", //     + Romanian
             "ru_RU", //     + Russian
             "sr_SP",  //   + Serbian
             "sk", //     + Slovak
-            "es", // All Spanish
-        /*
+            "es_ES", // All Spanish
             + Spanish (Argentina) es-AR
             + Spanish(Bolivia) es-BO
             +? Spanish( Chile) es-CL
@@ -98,10 +119,10 @@ public class Speaker {
             + Spanish(US) es-US
             + Spanish(Uruguay) es-UY
             + Spanish(Venezuela) es-VE
-        */
             "sv_SE", //     + Swedish
             "tr", //     + Turkish
             "zu" //     + Zulu
+        */
     };
 
     public static boolean localeSupported(String locale) {

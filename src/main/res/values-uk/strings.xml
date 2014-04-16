@@ -30,4 +30,8 @@
     <string name="msg_no_cards">Нема карток в наборi</string>
     <string name="label_cards">Карток</string>
     <string name="action_play">Play</string>
+    <string name="msg_no_internet_connection">Пiдключiться до iнтернету та спробуйте ще раз.</string>
+    <string name="action_goto">Перехiд до...</string>
+    <string name="ok">ОК</string>
+    <string name="cancel">Скасувати</string>
 </resources>
