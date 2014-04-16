@@ -1,8 +1,10 @@
 package com.cwport.sentencer;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -71,7 +73,7 @@ public class CardActivity extends ActionBarActivity {
         Intent i = getIntent();
         this.lessonIndex = i.getIntExtra(DataHelper.EXTRA_LESSON_INDEX, 0);
         this.lessonTitle = i.getStringExtra(DataHelper.EXTRA_LESSON_TITLE);
-        this.flip = this.showBackFirst;
+
         this.textView = (TextView) findViewById(R.id.card_text);
         this.textView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -96,14 +98,26 @@ public class CardActivity extends ActionBarActivity {
         this.btnPrev = (ImageButton) findViewById(R.id.button_prev);
         this.btnFlip = (ImageButton) findViewById(R.id.button_flip);
         this.btnNext = (ImageButton) findViewById(R.id.button_next);
-        if(savedInstanceState != null) {
-            this.cardIndex = savedInstanceState.getInt(DataHelper.PARAM_CARD_INDEX);
-            this.flip = savedInstanceState.getBoolean(DataHelper.PARAM_FLIP);
-            this.shuffled = savedInstanceState.getBoolean(DataHelper.PARAM_SHUFFLED);
-            this.showMarked = savedInstanceState.getBoolean(DataHelper.PARAM_SHOWMARKED);
-            this.showBackFirst = savedInstanceState.getBoolean(DataHelper.PARAM_SHOWBACKFIRST);
-        }
+
         try {
+            this.lesson = DataManager.getInstance().getLesson(this.lessonIndex);
+
+            if(savedInstanceState != null) {
+                this.cardIndex = savedInstanceState.getInt(DataHelper.PARAM_CARD_INDEX);
+                this.flip = savedInstanceState.getBoolean(DataHelper.PARAM_FLIP);
+                this.shuffled = savedInstanceState.getBoolean(DataHelper.PARAM_SHUFFLED);
+                this.showMarked = savedInstanceState.getBoolean(DataHelper.PARAM_SHOWMARKED);
+                this.showBackFirst = savedInstanceState.getBoolean(DataHelper.PARAM_SHOWBACKFIRST);
+            } else {
+                SharedPreferences sharedPref = this.getSharedPreferences(
+                        DataHelper.PREF_PREFIX + this.lesson.getFilename(), Context.MODE_PRIVATE);
+                this.cardIndex = sharedPref.getInt(DataHelper.PARAM_CARD_INDEX, 0);
+                this.shuffled = sharedPref.getBoolean(DataHelper.PARAM_SHUFFLED, false);
+                this.showMarked = sharedPref.getBoolean(DataHelper.PARAM_SHOWMARKED, false);
+                this.showBackFirst = sharedPref.getBoolean(DataHelper.PARAM_SHOWBACKFIRST, false);
+            }
+            this.flip = this.showBackFirst;
+
             initCards();
             showCard();
         } catch(DataException de) {
@@ -124,8 +138,21 @@ public class CardActivity extends ActionBarActivity {
         bundle.putBoolean(DataHelper.PARAM_SHOWBACKFIRST, this.showBackFirst);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Save SharedPreferences on activity stop
+        SharedPreferences sharedPref = this.getSharedPreferences(
+                DataHelper.PREF_PREFIX + this.lesson.getFilename(), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(DataHelper.PARAM_CARD_INDEX, this.cardIndex);
+        editor.putBoolean(DataHelper.PARAM_SHUFFLED, this.shuffled);
+        editor.putBoolean(DataHelper.PARAM_SHOWMARKED, this.showMarked);
+        editor.putBoolean(DataHelper.PARAM_SHOWBACKFIRST, this.showBackFirst);
+        editor.commit();
+    }
+
     private void initCards() throws DataException {
-        this.lesson = DataManager.getInstance().getLesson(this.lessonIndex);
         this.cards = new ArrayList<Card>(lesson.getCards());
         if(this.showMarked) {
             Iterator<Card> iterator = this.cards.iterator();
@@ -148,11 +175,10 @@ public class CardActivity extends ActionBarActivity {
             this.btnFlip.setVisibility(View.INVISIBLE);
             this.btnNext.setVisibility(View.INVISIBLE);
             this.btnPlay.setVisibility(View.INVISIBLE);
-            this.btnPlay.setVisibility(View.INVISIBLE);
             return;
         }
         this.btnPrev.setVisibility(this.cardIndex > 0 ? View.VISIBLE : View.INVISIBLE);
-        this.btnFlip.setVisibility(View.VISIBLE);
+        this.btnFlip.setVisibility(this.cardCount > 0 ? View.VISIBLE : View.INVISIBLE);
         this.btnNext.setVisibility((this.cardIndex + 1) < this.cardCount ? View.VISIBLE : View.INVISIBLE);
         this.setTitle(this.lessonTitle + " (" + (this.cardIndex + 1)  + "/" + this.cardCount + ")");
         if(Speaker.localeSupported(this.textLocale)) {
@@ -326,6 +352,7 @@ public class CardActivity extends ActionBarActivity {
             initCards();
             if(this.cards.size() > 0) {
                 showCard();
+                return;
             } else {
                 this.textView.setText(R.string.msg_no_cards);
             }
@@ -333,7 +360,7 @@ public class CardActivity extends ActionBarActivity {
             Log.e(TAG, de.getMessage());
             this.textView.setText(de.getMessage());
         }
-
+        initNavigation();
     }
 
     private void markCard() {
@@ -366,8 +393,10 @@ public class CardActivity extends ActionBarActivity {
         mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-
-                return false;
+                Toast.makeText(getApplicationContext(), "MediaPlayer error: " + what,
+                        Toast.LENGTH_LONG).show();
+                btnPlay.setEnabled(true);
+                return true;
             }
         });
         try {
@@ -379,8 +408,11 @@ public class CardActivity extends ActionBarActivity {
 //            mediaPlayer.setDataSource(this, Uri.parse(url), headers);
             mediaPlayer.prepare(); // might take long! (for buffering, etc)
             mediaPlayer.start();
-        } catch(IOException ex) {
+        } catch(Exception ex) {
+            Toast.makeText(getApplicationContext(), "MediaPlayer error: " + ex.getLocalizedMessage(),
+                    Toast.LENGTH_LONG).show();
             Log.e(TAG, ex.getLocalizedMessage());
+            btnPlay.setEnabled(true);
         }
     }
 }

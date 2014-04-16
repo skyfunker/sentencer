@@ -26,17 +26,20 @@
         android:visibility="invisible"
         />
     <TextView
+        android:id="@+id/card_text"
         android:textSize="@dimen/text_size_question"
         android:scrollbars="vertical"
+        android:layout_below="@+id/button_play"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:id="@+id/card_text"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:gravity="center"
         android:layout_centerVertical="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         />
 
     <RelativeLayout
+        android:id="@+id/panel_navigation"
         android:layout_alignParentBottom="true"
         android:gravity="center|bottom"
         android:layout_width="match_parent"
