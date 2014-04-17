@@ -141,7 +141,6 @@ public class CardActivity extends ActionBarActivity {
         if(( this.cardIndex + 1) < this.cardCount) {
             this.cardIndex++;
         }
-//        initNavigation();
         showCard();
     }
 
@@ -150,7 +149,6 @@ public class CardActivity extends ActionBarActivity {
         if(this.cardIndex > 0) {
             this.cardIndex--;
         }
-//        initNavigation();
         showCard();
     }
 
@@ -203,9 +201,6 @@ public class CardActivity extends ActionBarActivity {
                 item.setChecked(this.showBackFirst);
                 showBackFirst();
                 return true;
-//            case R.id.action_settings:
-//                showSettings();
-//                return true;
             case R.id.action_help:
                 showHelp();
                 return true;
@@ -219,7 +214,6 @@ public class CardActivity extends ActionBarActivity {
     private void showBackFirst() {
         try {
             initCards();
-//            initNavigation();
             this.flip = this.showBackFirst;
             if(this.cards.size() > 0) {
                 showCard();
@@ -236,11 +230,11 @@ public class CardActivity extends ActionBarActivity {
         this.forceRewind = true;
         try {
             initCards();
-//            initNavigation();
             if(this.cards.size() > 0) {
                 showCard();
             } else {
                 this.textView.setText(R.string.msg_no_cards);
+                initNavigation();
             }
         } catch(DataException de) {
             Log.e(TAG, de.getMessage());
@@ -251,11 +245,11 @@ public class CardActivity extends ActionBarActivity {
         this.forceRewind = true;
         try {
             initCards();
-//            initNavigation();
             if(this.cards.size() > 0) {
                 showCard();
             } else {
                 this.textView.setText(R.string.msg_no_cards);
+                initNavigation();
             }
         } catch(DataException de) {
             Log.e(TAG, de.getMessage());
