@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -29,16 +28,13 @@ import com.cwport.sentencer.model.Card;
 import com.cwport.sentencer.model.Lesson;
 import com.cwport.sentencer.speak.Speaker;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 
 public class CardActivity extends ActionBarActivity {
@@ -61,6 +57,7 @@ public class CardActivity extends ActionBarActivity {
     private boolean showBackFirst = false;
     private boolean forceRewind = false;
     private String textLocale; // text locale of the current card side
+    private Set<String> markedCardsIdSet = new HashSet<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +105,9 @@ public class CardActivity extends ActionBarActivity {
                 this.shuffled = savedInstanceState.getBoolean(DataHelper.PARAM_SHUFFLED);
                 this.showMarked = savedInstanceState.getBoolean(DataHelper.PARAM_SHOWMARKED);
                 this.showBackFirst = savedInstanceState.getBoolean(DataHelper.PARAM_SHOWBACKFIRST);
+                String markedCardIdArray[] = savedInstanceState.getStringArray(DataHelper.PARAM_MARKED_CARDS);
+                this.markedCardsIdSet = new HashSet<String>();
+                Collections.addAll(this.markedCardsIdSet, markedCardIdArray);
             } else {
                 SharedPreferences sharedPref = this.getSharedPreferences(
                         DataHelper.PREF_PREFIX + this.lesson.getFilename(), Context.MODE_PRIVATE);
@@ -115,6 +115,7 @@ public class CardActivity extends ActionBarActivity {
                 this.shuffled = sharedPref.getBoolean(DataHelper.PARAM_SHUFFLED, false);
                 this.showMarked = sharedPref.getBoolean(DataHelper.PARAM_SHOWMARKED, false);
                 this.showBackFirst = sharedPref.getBoolean(DataHelper.PARAM_SHOWBACKFIRST, false);
+                this.markedCardsIdSet = sharedPref.getStringSet(DataHelper.PARAM_MARKED_CARDS, new HashSet<String>());
             }
             this.flip = this.showBackFirst;
 
@@ -136,6 +137,7 @@ public class CardActivity extends ActionBarActivity {
         bundle.putBoolean(DataHelper.PARAM_SHUFFLED, this.shuffled);
         bundle.putBoolean(DataHelper.PARAM_SHOWMARKED, this.showMarked);
         bundle.putBoolean(DataHelper.PARAM_SHOWBACKFIRST, this.showBackFirst);
+        bundle.putStringArray(DataHelper.PARAM_MARKED_CARDS, getMarkedCardIdArray());
     }
 
     @Override
@@ -149,11 +151,36 @@ public class CardActivity extends ActionBarActivity {
         editor.putBoolean(DataHelper.PARAM_SHUFFLED, this.shuffled);
         editor.putBoolean(DataHelper.PARAM_SHOWMARKED, this.showMarked);
         editor.putBoolean(DataHelper.PARAM_SHOWBACKFIRST, this.showBackFirst);
+        editor.putStringSet(DataHelper.PARAM_MARKED_CARDS, getMarkedCardsIdSet());
         editor.commit();
+    }
+
+    private Set<String> getMarkedCardsIdSet() {
+        Set<String> markedSet = new HashSet<String>();
+        for(Card c: this.cards) {
+            if(c.isMarked()) {
+                markedSet.add(c.getId());
+            }
+        }
+        return markedSet;
+    }
+
+    private String[] getMarkedCardIdArray() {
+        Set<String> markedSet = getMarkedCardsIdSet();
+        String markedIdArray[] = new String[markedSet.size()];
+        markedIdArray = markedSet.toArray(markedIdArray);
+        return  markedIdArray;
     }
 
     private void initCards() throws DataException {
         this.cards = new ArrayList<Card>(lesson.getCards());
+
+        Iterator<Card> it = this.cards.iterator();
+        while(it.hasNext()) {
+            Card c = it.next();
+            c.setMarked(this.markedCardsIdSet.contains(c.getId()));
+        }
+
         if(this.showMarked) {
             Iterator<Card> iterator = this.cards.iterator();
             while(iterator.hasNext()) {
@@ -366,6 +393,9 @@ public class CardActivity extends ActionBarActivity {
     private void markCard() {
         Card card = cards.get(this.cardIndex);
         card.setMarked(!card.getMarked());
+        if(!card.isMarked() && this.markedCardsIdSet.contains(card.getId())) {
+            this.markedCardsIdSet.remove(card.getId());
+        }
         showCard();
     }
 

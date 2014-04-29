@@ -21,6 +21,7 @@ public class DataHelper {
     public static final String PARAM_SHUFFLED = "shuffled";
     public static final String PARAM_SHOWMARKED = "showmarked";
     public static final String PARAM_SHOWBACKFIRST = "showbackfirst";
+    public static final String PARAM_MARKED_CARDS = "markedcards";
     public static final String PREF_PREFIX = "com.cwport.sentencer.";
 
     /**
@@ -52,4 +53,5 @@ public class DataHelper {
         }
         return "";
     }
+
 }

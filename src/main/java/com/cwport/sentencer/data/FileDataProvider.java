@@ -136,7 +136,7 @@ public class FileDataProvider implements DataProvider {
             while ((nextLine = reader.readNext()) != null) {
                 String faceText = nextLine[0].trim();
                 String backText = nextLine[1].trim();
-                Card c = new Card("", faceText, backText, false);
+                Card c = new Card(DataHelper.md5(faceText), faceText, backText, false);
                 cards.add(c);
             }
             reader.close();

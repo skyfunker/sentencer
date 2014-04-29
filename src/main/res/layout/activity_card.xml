@@ -24,26 +24,31 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:visibility="invisible"
+        android:layout_weight="0"
         />
-    <TextView
-        android:id="@+id/card_text"
-        android:textSize="@dimen/text_size_question"
-        android:scrollbars="vertical"
+    <ScrollView
+        android:id="@+id/scroll_view"
         android:layout_below="@+id/button_play"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:gravity="center"
-        android:layout_centerVertical="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
-
+        android:layout_above="@+id/panel_navigation"
+        android:fillViewport="true">
+        <TextView
+            android:id="@+id/card_text"
+            android:textSize="@dimen/text_size_question"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+    </ScrollView>
     <RelativeLayout
         android:id="@+id/panel_navigation"
         android:layout_alignParentBottom="true"
         android:gravity="center|bottom"
         android:layout_width="match_parent"
-        android:layout_height="48dp">
+        android:layout_height="48dp"
+        android:layout_weight="0">
 
         <ImageButton
             android:id="@+id/button_prev"
