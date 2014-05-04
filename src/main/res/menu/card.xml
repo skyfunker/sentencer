@@ -3,16 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.cwport.sentencer.CardActivity">
 
+    <item android:id="@+id/action_goto"
+        android:title="@string/action_goto"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
     <item android:id="@+id/action_shuffle"
         android:title="@string/action_shuffle"
-        android:orderInCategory="100"
+        android:orderInCategory="200"
         android:checkable="true"
         android:checked="false"
         app:showAsAction="never" />
 
     <item android:id="@+id/action_showmarked"
         android:title="@string/action_showmarked"
-        android:orderInCategory="200"
+        android:orderInCategory="400"
         android:icon="@drawable/ic_action_showmarked"
         android:checkable="true"
         android:checked="false"
@@ -20,7 +25,7 @@
 
     <item android:id="@+id/action_showbackfirst"
         android:title="@string/action_show_back_first"
-        android:orderInCategory="200"
+        android:orderInCategory="600"
         android:checkable="true"
         android:checked="false"
         app:showAsAction="never" />
@@ -33,6 +38,6 @@
     <item android:id="@+id/action_help"
         android:title="@string/action_help"
         android:icon="@drawable/ic_action_help"
-        android:orderInCategory="400"
+        android:orderInCategory="800"
         app:showAsAction="ifRoom" />
 </menu>

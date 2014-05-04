@@ -29,4 +29,9 @@
     <string name="pref_title_saveappstate" />
     <string name="msg_no_cards">There are no cards in set</string>
     <string name="label_cards">Cards</string>
+    <string name="action_play">Voice</string>
+    <string name="msg_no_internet_connection">No internet connection found. Connect your device and try again.</string>
+    <string name="action_goto">Go to...</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
 </resources>

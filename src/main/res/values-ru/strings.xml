@@ -29,4 +29,9 @@
     <string name="pref_title_saveappstate" />
     <string name="msg_no_cards">Нет карт в наборе</string>
     <string name="label_cards">Карточек</string>
+    <string name="action_play">Озвучить</string>
+    <string name="msg_no_internet_connection">Для этой функции необходимо соединение с интернет.</string>
+    <string name="action_goto">Перейти к...</string>
+    <string name="ok">ОК</string>
+    <string name="cancel">Отменить</string>
 </resources>

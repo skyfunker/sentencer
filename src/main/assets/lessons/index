@@ -1,8 +1,9 @@
 filename;title;cardfacelocale;cardbacklocale;description;cardcount;
-Lesson 13.txt;Урок 13;ru_RU;en_US;Русский - English;46;
-Lesson 14.txt;Урок 14;ru_RU;en_US;Русский - English;75;
-Lesson 15.txt;Урок 15;ru_RU;en_US;Русский - English;35;
-Lesson 16.txt;Урок 16;ru_RU;en_US;Русский - English;79;
-Lesson 17.txt;Урок 17;ru_RU;en_US;Русский - English;30;
-Lesson 18.txt;Урок 18;ru_RU;en_US;Русский - English;70;
-Irregular verbs.txt;Неправильные глаголы;en_US;ru_RU;English - Русский;100;
+50-proverbs-en-en.csv;The 50 most important English proverbs;en_US;en_US;English - English;50;
+idioms-en-uk.csv;Англiйськi iдiоми українською;en_US;uk_UA;English - Українська;382;
+proverbs-en-uk.csv;Англійські прислів'я з українським перекладом;en_US;uk_UA;English - Українська;86;
+idioms-ru-en.csv;100 Русских идиом на английском;ru_RU;en_US;Русский - English;100;
+idioms-en-de.csv;100 English idioms in German;en_US;de_DE;English - Deutsch;100;
+idioms-en-fr.csv;100 English idioms in French;en_US;fr_FR;English - Français;100;
+idioms-en-es.csv;100 English idioms in Spanish;en_US;es_ES;English - Español;100;
+180deutschverbs.txt;180 deutsche Verben für jeden Tag;de_DE;ru_RU;Deutsch - Русский;180;

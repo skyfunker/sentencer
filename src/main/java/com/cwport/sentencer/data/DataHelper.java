@@ -21,6 +21,8 @@ public class DataHelper {
     public static final String PARAM_SHUFFLED = "shuffled";
     public static final String PARAM_SHOWMARKED = "showmarked";
     public static final String PARAM_SHOWBACKFIRST = "showbackfirst";
+    public static final String PARAM_MARKED_CARDS = "markedcards";
+    public static final String PREF_PREFIX = "com.cwport.sentencer.";
 
     /**
      * Use this function to generate MD5 hash for a Card object
@@ -51,4 +53,5 @@ public class DataHelper {
         }
         return "";
     }
+
 }
