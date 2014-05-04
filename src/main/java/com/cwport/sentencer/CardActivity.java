@@ -116,8 +116,8 @@ public class CardActivity extends ActionBarActivity {
                 this.showMarked = sharedPref.getBoolean(DataHelper.PARAM_SHOWMARKED, false);
                 this.showBackFirst = sharedPref.getBoolean(DataHelper.PARAM_SHOWBACKFIRST, false);
                 this.markedCardsIdSet = sharedPref.getStringSet(DataHelper.PARAM_MARKED_CARDS, new HashSet<String>());
+                this.flip = this.showBackFirst;
             }
-            this.flip = this.showBackFirst;
 
             initCards();
             showCard();
@@ -174,10 +174,7 @@ public class CardActivity extends ActionBarActivity {
 
     private void initCards() throws DataException {
         this.cards = new ArrayList<Card>(lesson.getCards());
-
-        Iterator<Card> it = this.cards.iterator();
-        while(it.hasNext()) {
-            Card c = it.next();
+        for (Card c : this.cards) {
             c.setMarked(this.markedCardsIdSet.contains(c.getId()));
         }
 
@@ -185,9 +182,12 @@ public class CardActivity extends ActionBarActivity {
             Iterator<Card> iterator = this.cards.iterator();
             while(iterator.hasNext()) {
                 Card c = iterator.next();
-                if(!c.isMarked()) { iterator.remove(); }
+                if(!c.isMarked()) {
+                    iterator.remove();
+                }
             }
         }
+
         if(this.cards.size() > 0 && this.shuffled) {
             Collections.shuffle(this.cards, new Random(this.cards.size()));
         }
@@ -197,35 +197,41 @@ public class CardActivity extends ActionBarActivity {
     }
 
     private void initNavigation() {
-        if (this.cardCount == 0) {
+        if (this.cardCount > 0) {
+            this.btnPrev.setVisibility(this.cardIndex > 0 ? View.VISIBLE : View.INVISIBLE);
+            this.btnFlip.setVisibility(this.cardCount > 0 ? View.VISIBLE : View.INVISIBLE);
+            this.btnNext.setVisibility((this.cardIndex + 1) < this.cardCount ? View.VISIBLE : View.INVISIBLE);
+            this.setTitle(this.lessonTitle + " (" + (this.cardIndex + 1)  + "/" + this.cardCount + ")");
+            if(Speaker.localeSupported(this.textLocale)) {
+                this.btnPlay.setVisibility(View.VISIBLE);
+            } else {
+                this.btnPlay.setVisibility(View.INVISIBLE);
+            }
+        } else {
+
             this.btnPrev.setVisibility(View.INVISIBLE);
             this.btnFlip.setVisibility(View.INVISIBLE);
             this.btnNext.setVisibility(View.INVISIBLE);
             this.btnPlay.setVisibility(View.INVISIBLE);
-            return;
-        }
-        this.btnPrev.setVisibility(this.cardIndex > 0 ? View.VISIBLE : View.INVISIBLE);
-        this.btnFlip.setVisibility(this.cardCount > 0 ? View.VISIBLE : View.INVISIBLE);
-        this.btnNext.setVisibility((this.cardIndex + 1) < this.cardCount ? View.VISIBLE : View.INVISIBLE);
-        this.setTitle(this.lessonTitle + " (" + (this.cardIndex + 1)  + "/" + this.cardCount + ")");
-        if(Speaker.localeSupported(this.textLocale)) {
-            this.btnPlay.setVisibility(View.VISIBLE);
-        } else {
-            this.btnPlay.setVisibility(View.INVISIBLE);
+            this.setTitle(this.lessonTitle + " (0/0)");
         }
     }
     private void showCard() {
-        if(this.flip) {
-            textView.setText(cards.get(this.cardIndex).getBackText());
-            this.textLocale = this.lesson.getBackLocale();
+        if(this.cards.size() > 0) {
+            if(this.flip) {
+                textView.setText(cards.get(this.cardIndex).getBackText());
+                this.textLocale = this.lesson.getBackLocale();
+            } else {
+                textView.setText(cards.get(this.cardIndex).getFaceText());
+                this.textLocale = this.lesson.getFaceLocale();
+            }
+            if(cards.get(this.cardIndex).getMarked()) {
+                this.textView.setTextColor(Color.parseColor("#FFBB33"));
+            } else {
+                this.textView.setTextColor(Color.parseColor("#FFFFFF"));
+            }
         } else {
-            textView.setText(cards.get(this.cardIndex).getFaceText());
-            this.textLocale = this.lesson.getFaceLocale();
-        }
-        if(cards.get(this.cardIndex).getMarked()) {
-            this.textView.setTextColor(Color.parseColor("#FFBB33"));
-        } else {
-            this.textView.setTextColor(Color.parseColor("#FFFFFF"));
+            showNoCardsMessage();
         }
         initNavigation();
     }
@@ -329,7 +335,6 @@ public class CardActivity extends ActionBarActivity {
                 // or return them to the component that opened the dialog
                 cardIndex = numberPicker.getValue() - 1;
                 showCard();
-                return;
             }
         });
         gotoDialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -348,7 +353,7 @@ public class CardActivity extends ActionBarActivity {
             if(this.cards.size() > 0) {
                 showCard();
             } else {
-                this.textView.setText(R.string.msg_no_cards);
+                showNoCardsMessage();
             }
         } catch(DataException de) {
             Log.e(TAG, de.getMessage());
@@ -363,7 +368,7 @@ public class CardActivity extends ActionBarActivity {
             if(this.cards.size() > 0) {
                 showCard();
             } else {
-                this.textView.setText(R.string.msg_no_cards);
+                showNoCardsMessage();
                 initNavigation();
             }
         } catch(DataException de) {
@@ -371,6 +376,7 @@ public class CardActivity extends ActionBarActivity {
             this.textView.setText(de.getMessage());
         }
     }
+
     private void showMarkedCards() {
         this.forceRewind = true;
         try {
@@ -379,7 +385,7 @@ public class CardActivity extends ActionBarActivity {
                 showCard();
                 return;
             } else {
-                this.textView.setText(R.string.msg_no_cards);
+                showNoCardsMessage();
                 initNavigation();
             }
         } catch(DataException de) {
@@ -390,10 +396,16 @@ public class CardActivity extends ActionBarActivity {
     }
 
     private void markCard() {
-        Card card = cards.get(this.cardIndex);
+        Card card = this.cards.get(this.cardIndex);
         card.setMarked(!card.getMarked());
-        if(!card.isMarked() && this.markedCardsIdSet.contains(card.getId())) {
-            this.markedCardsIdSet.remove(card.getId());
+        if(card.isMarked()) {
+            if(!this.markedCardsIdSet.contains(card.getId())) {
+                this.markedCardsIdSet.add(card.getId());
+            }
+        } else {
+            if (this.markedCardsIdSet.contains(card.getId())) {
+                this.markedCardsIdSet.remove(card.getId());
+            }
         }
         showCard();
     }
@@ -401,6 +413,11 @@ public class CardActivity extends ActionBarActivity {
     private void showHelp() {
         Intent helpIntent = new Intent(this, HelpActivity.class);
         startActivity(helpIntent);
+    }
+
+    private void showNoCardsMessage() {
+        this.textView.setTextColor(Color.parseColor("#FFFFFF"));
+        this.textView.setText(R.string.msg_no_cards);
     }
 
     private void textToSpeech(View view, String locale, String text) {
