@@ -24,6 +24,8 @@ import android.widget.Toast;
 import com.cwport.sentencer.data.DataException;
 import com.cwport.sentencer.data.DataHelper;
 import com.cwport.sentencer.data.DataManager;
+import com.cwport.sentencer.data.DataProvider;
+import com.cwport.sentencer.data.FileDataProvider;
 import com.cwport.sentencer.model.Card;
 import com.cwport.sentencer.model.Lesson;
 import com.cwport.sentencer.speak.Speaker;
@@ -48,9 +50,12 @@ public class CardActivity extends ActionBarActivity {
     private ArrayList<Card> cards = new ArrayList<Card>();
     private Lesson lesson = new Lesson();
     private TextView textView;
-    private ImageButton btnNext;
-    private ImageButton btnFlip;
-    private ImageButton btnPrev;
+//    private ImageButton btnNext;
+//    private ImageButton btnFlip;
+//    private ImageButton btnPrev;
+    private Button btnNext;
+    private Button btnFlip;
+    private Button btnPrev;
     private Button btnPlay;
     private boolean showMarked = false;
     private boolean shuffled = false;
@@ -58,6 +63,8 @@ public class CardActivity extends ActionBarActivity {
     private boolean forceRewind = false;
     private String textLocale; // text locale of the current card side
     private Set<String> markedCardsIdSet = new HashSet<String>();
+    DataManager dataManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,12 +99,17 @@ public class CardActivity extends ActionBarActivity {
                  }
              }
         );
-        this.btnPrev = (ImageButton) findViewById(R.id.button_prev);
-        this.btnFlip = (ImageButton) findViewById(R.id.button_flip);
-        this.btnNext = (ImageButton) findViewById(R.id.button_next);
+        this.btnPrev = (Button) findViewById(R.id.button_prev);
+        this.btnFlip = (Button) findViewById(R.id.button_flip);
+        this.btnNext = (Button) findViewById(R.id.button_next);
 
         try {
-            this.lesson = DataManager.getInstance().getLesson(this.lessonIndex);
+            dataManager = DataManager.getInstance();
+            DataProvider dataProvider = dataManager.getDataProvider();
+            if (dataProvider instanceof FileDataProvider) {
+                ((FileDataProvider) dataProvider).setContext(this);
+            }
+            this.lesson = dataManager.getLesson(this.lessonIndex);
 
             if(savedInstanceState != null) {
                 this.cardIndex = savedInstanceState.getInt(DataHelper.PARAM_CARD_INDEX);
@@ -124,6 +136,9 @@ public class CardActivity extends ActionBarActivity {
         } catch(DataException de) {
             Log.e(TAG, de.getMessage());
             this.textView.setText(de.getMessage());
+        } catch(Exception ex) {
+            Log.e(TAG, ex.getMessage());
+            this.textView.setText(ex.getMessage());
         }
 
     }
@@ -189,7 +204,8 @@ public class CardActivity extends ActionBarActivity {
         }
 
         if(this.cards.size() > 0 && this.shuffled) {
-            Collections.shuffle(this.cards, new Random(this.cards.size()));
+//            Collections.shuffle(this.cards, new Random(this.cards.size()));
+            Collections.shuffle(this.cards, new Random());
         }
         this.cardCount = cards.size();
         if(this.cardIndex > (this.cardCount - 1) || this.forceRewind) this.cardIndex = 0; // to avoid exception

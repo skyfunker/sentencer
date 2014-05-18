@@ -3,32 +3,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.cwport.sentencer.CardActivity">
 
-    <item android:id="@+id/action_goto"
-        android:title="@string/action_goto"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
+    <item android:id="@+id/submenu_card_options"
+        android:title="@string/submenu_card_options"
+        android:icon="@drawable/ic_action_options"
+        android:orderInCategory="10"
+        app:showAsAction="always">
+    <menu>
+        <item android:id="@+id/action_goto"
+            android:title="@string/action_goto"
+            android:orderInCategory="100"
+            app:showAsAction="never" />
 
-    <item android:id="@+id/action_shuffle"
-        android:title="@string/action_shuffle"
-        android:orderInCategory="200"
-        android:checkable="true"
-        android:checked="false"
-        app:showAsAction="never" />
+        <item android:id="@+id/action_shuffle"
+            android:title="@string/action_shuffle"
+            android:orderInCategory="200"
+            android:checkable="true"
+            android:checked="false"
+            app:showAsAction="never" />
 
-    <item android:id="@+id/action_showmarked"
-        android:title="@string/action_showmarked"
-        android:orderInCategory="400"
-        android:icon="@drawable/ic_action_showmarked"
-        android:checkable="true"
-        android:checked="false"
-        app:showAsAction="never" />
+        <item android:id="@+id/action_showmarked"
+            android:title="@string/action_showmarked"
+            android:orderInCategory="300"
+            android:checkable="true"
+            android:checked="false"
+            app:showAsAction="never" />
 
-    <item android:id="@+id/action_showbackfirst"
-        android:title="@string/action_show_back_first"
-        android:orderInCategory="600"
-        android:checkable="true"
-        android:checked="false"
-        app:showAsAction="never" />
+        <item android:id="@+id/action_showbackfirst"
+            android:title="@string/action_show_back_first"
+            android:orderInCategory="400"
+            android:checkable="true"
+            android:checked="false"
+            app:showAsAction="never" />
+    </menu>
+    </item>
 
     <!--<item android:id="@+id/action_settings"-->
         <!--android:title="@string/action_settings"-->
@@ -38,6 +45,6 @@
     <item android:id="@+id/action_help"
         android:title="@string/action_help"
         android:icon="@drawable/ic_action_help"
-        android:orderInCategory="800"
-        app:showAsAction="ifRoom" />
+        android:orderInCategory="500"
+        app:showAsAction="always" />
 </menu>

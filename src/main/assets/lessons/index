@@ -1,4 +1,5 @@
 filename;title;cardfacelocale;cardbacklocale;description;cardcount;
+irregular-verbs-en-ru.txt;Неправильные английские глаголы;en_US;ru_RU;English - Русский;100;
 50-proverbs-en-en.csv;The 50 most important English proverbs;en_US;en_US;English - English;50;
 idioms-en-uk.csv;Англiйськi iдiоми українською;en_US;uk_UA;English - Українська;382;
 proverbs-en-uk.csv;Англійські прислів'я з українським перекладом;en_US;uk_UA;English - Українська;86;

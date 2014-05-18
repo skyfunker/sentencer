@@ -38,6 +38,9 @@ public class FileDataProvider implements DataProvider {
     public void setContext(android.content.Context appContext) {
         this.context =  appContext;
     }
+    public android.content.Context getContext() {
+        return this.context;
+    }
 
     @Override
     public ArrayList<Lesson> getLessons() throws DataException {

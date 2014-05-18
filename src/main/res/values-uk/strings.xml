@@ -34,4 +34,5 @@
     <string name="action_goto">Перехiд до...</string>
     <string name="ok">ОК</string>
     <string name="cancel">Скасувати</string>
+    <string name="submenu_card_options">Options</string>
 </resources>

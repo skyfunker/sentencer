@@ -34,4 +34,5 @@
     <string name="action_goto">Go to...</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
+    <string name="submenu_card_options">Options</string>
 </resources>

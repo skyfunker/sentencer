@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.cwport.sentencer.data.DataException;
 import com.cwport.sentencer.data.DataHelper;
 import com.cwport.sentencer.data.DataManager;
+import com.cwport.sentencer.data.DataProvider;
 import com.cwport.sentencer.data.FileDataProvider;
 import com.cwport.sentencer.model.Lesson;
 
@@ -31,6 +32,7 @@ public class MainActivity extends ActionBarActivity {
     SharedPreferences sharedPref;
     SharedPreferences.Editor sharedPrefEditor;
     ArrayList<Lesson> lessonList;
+    DataManager dataManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +43,11 @@ public class MainActivity extends ActionBarActivity {
         ListView listView = (ListView) findViewById(R.id.list_lessons);
         lessonList = new ArrayList<Lesson>();
         try {
-            DataManager dataManager = DataManager.getInstance();
-            ((FileDataProvider)dataManager.getDataProvider()).setContext(this);
+            dataManager = DataManager.getInstance();
+            DataProvider dataProvider = dataManager.getDataProvider();
+            if (dataProvider instanceof FileDataProvider) {
+                ((FileDataProvider) dataProvider).setContext(this);
+            }
             lessonList = dataManager.getLessons();
 
         } catch(DataException de) {
