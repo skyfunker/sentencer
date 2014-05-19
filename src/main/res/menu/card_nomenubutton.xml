@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.cwport.sentencer.CardActivity">
+
+    <item android:id="@+id/action_options"
+        android:title="@string/action_options"
+        android:icon="@drawable/ic_action_options"
+        android:orderInCategory="10"
+        app:showAsAction="always">
+    </item>
+
+    <!--<item android:id="@+id/action_settings"-->
+        <!--android:title="@string/action_settings"-->
+        <!--android:orderInCategory="300"-->
+        <!--app:showAsAction="never" />-->
+
+    <item android:id="@+id/action_help"
+        android:title="@string/action_help"
+        android:icon="@drawable/ic_action_help"
+        android:orderInCategory="500"
+        app:showAsAction="always" />
+</menu>

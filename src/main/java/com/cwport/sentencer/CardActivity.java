@@ -12,9 +12,12 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
@@ -204,8 +207,8 @@ public class CardActivity extends ActionBarActivity {
         }
 
         if(this.cards.size() > 0 && this.shuffled) {
-//            Collections.shuffle(this.cards, new Random(this.cards.size()));
             Collections.shuffle(this.cards, new Random());
+            this.cardIndex = 0;
         }
         this.cardCount = cards.size();
         if(this.cardIndex > (this.cardCount - 1) || this.forceRewind) this.cardIndex = 0; // to avoid exception
@@ -242,9 +245,9 @@ public class CardActivity extends ActionBarActivity {
                 this.textLocale = this.lesson.getFaceLocale();
             }
             if(cards.get(this.cardIndex).getMarked()) {
-                this.textView.setTextColor(Color.parseColor("#FFBB33"));
+                this.textView.setTextColor(this.getResources().getColor(R.color.orange));
             } else {
-                this.textView.setTextColor(Color.parseColor("#FFFFFF"));
+                this.textView.setTextColor(this.getResources().getColor(R.color.white));
             }
         } else {
             showNoCardsMessage();
@@ -276,23 +279,27 @@ public class CardActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.card, menu);
-        for(int i = 0; i < menu.size(); i++) {
-            MenuItem item = menu.getItem(i);
-            int id = item.getItemId();
-            switch (id) {
-                case R.id.action_goto:
-                    break;
-                case R.id.action_showmarked:
-                    item.setChecked(this.showMarked);
-                    break;
-                case R.id.action_shuffle:
-                    item.setChecked(this.shuffled);
-                    break;
-                case R.id.action_showbackfirst:
-                    item.setChecked(this.showBackFirst);
-                    break;
+        if(KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_MENU)) {
+            getMenuInflater().inflate(R.menu.card, menu);
+            for (int i = 0; i < menu.size(); i++) {
+                MenuItem item = menu.getItem(i);
+                int id = item.getItemId();
+                switch (id) {
+                    case R.id.action_goto:
+                        break;
+                    case R.id.action_showmarked:
+                        item.setChecked(this.showMarked);
+                        break;
+                    case R.id.action_shuffle:
+                        item.setChecked(this.shuffled);
+                        break;
+                    case R.id.action_showbackfirst:
+                        item.setChecked(this.showBackFirst);
+                        break;
+                }
             }
+        } else { // no hardware menu button
+            getMenuInflater().inflate(R.menu.card_nomenubutton, menu);
         }
         return true;
     }
@@ -322,6 +329,9 @@ public class CardActivity extends ActionBarActivity {
                 item.setChecked(this.showBackFirst);
                 showBackFirst();
                 return true;
+            case R.id.action_options:
+                showOptionsDialog();
+                return true;
             case R.id.action_help:
                 showHelp();
                 return true;
@@ -330,6 +340,46 @@ public class CardActivity extends ActionBarActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showOptionsDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.action_options);
+        final CharSequence[] options = {
+                this.getResources().getString(R.string.action_shuffle),
+                this.getResources().getString(R.string.action_showmarked),
+                this.getResources().getString(R.string.action_show_back_first)
+        };
+        final boolean[] checkedOptions = {this.shuffled, this.showMarked, this.showBackFirst};
+
+        builder.setMultiChoiceItems(options, checkedOptions, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i, boolean b) {
+                return;
+            }
+        });
+        // Set the action buttons
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                shuffled = checkedOptions[0];
+                showMarked = checkedOptions[1];
+                showBackFirst = checkedOptions[2];
+                try {
+                    initCards();
+                    showCard();
+                } catch(DataException de) {
+                    Log.e(TAG, de.getMessage());
+                }
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                return;
+            }
+        });
+        builder.show();
     }
 
     /**
