@@ -499,6 +499,10 @@ public class CardActivity extends ActionBarActivity {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
+
+                btnPlay.setCompoundDrawablesWithIntrinsicBounds(
+                        getResources().getDrawable(R.drawable.ic_action_play),
+                        null, null, null);
                 btnPlay.setEnabled(true);
             }
         });
@@ -507,11 +511,17 @@ public class CardActivity extends ActionBarActivity {
             public boolean onError(MediaPlayer mp, int what, int extra) {
                 Toast.makeText(getApplicationContext(), "MediaPlayer error: " + what,
                         Toast.LENGTH_LONG).show();
+                btnPlay.setCompoundDrawablesWithIntrinsicBounds(
+                        getResources().getDrawable(R.drawable.ic_action_play),
+                        null, null, null);
                 btnPlay.setEnabled(true);
                 return true;
             }
         });
         try {
+            this.btnPlay.setCompoundDrawablesWithIntrinsicBounds(
+                    this.getResources().getDrawable(R.drawable.ic_action_pause),
+                    null, null, null);
             this.btnPlay.setEnabled(false);
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setDataSource(url);
@@ -524,6 +534,9 @@ public class CardActivity extends ActionBarActivity {
             Toast.makeText(getApplicationContext(), "MediaPlayer error: " + ex.getLocalizedMessage(),
                     Toast.LENGTH_LONG).show();
             Log.e(TAG, ex.getLocalizedMessage());
+            this.btnPlay.setCompoundDrawablesWithIntrinsicBounds(
+                    this.getResources().getDrawable(R.drawable.ic_action_play),
+                    null, null, null);
             btnPlay.setEnabled(true);
         }
     }
