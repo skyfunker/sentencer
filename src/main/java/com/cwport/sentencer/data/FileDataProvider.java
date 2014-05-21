@@ -114,6 +114,7 @@ public class FileDataProvider implements DataProvider {
     private String getLessonData(String lessonFile) throws DataException {
         String lessonData = "";
         InputStream stream = null;
+        Log.d(TAG, "Parse file: " + lessonFile);
         try {
             stream = context.getAssets().open(lessonFolder + "/" + lessonFile);
             int size = stream.available();
@@ -123,7 +124,7 @@ public class FileDataProvider implements DataProvider {
             lessonData = new String(buffer);
             if(stream != null) { stream.close(); }
         } catch (IOException e) {
-            // Log.e(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage());
             throw new DataException(ERROR_CANNOT_READ_LESSON_FILE, e);
 
         }
@@ -132,6 +133,7 @@ public class FileDataProvider implements DataProvider {
 
     private ArrayList<Card> parseLessonData(String csv) throws DataException {
         ArrayList<Card> cards = new ArrayList<Card>();
+        int line = 0;
         try {
             InputStream stream = new ByteArrayInputStream(csv.getBytes("UTF-8"));
             CSVReader reader = new CSVReader(new InputStreamReader(stream), ';', '\"', 0);
@@ -141,14 +143,15 @@ public class FileDataProvider implements DataProvider {
                 String backText = nextLine[1].trim();
                 Card c = new Card(DataHelper.md5(faceText), faceText, backText, false);
                 cards.add(c);
+                line++;
             }
             reader.close();
             stream.close();
         } catch(UnsupportedEncodingException ex) {
-            // Log.e(TAG, ex.getMessage());
+            Log.e(TAG, "Line:" + line + "; Error: " + ex.getMessage());
             throw new DataException(ERROR_CANNOT_READ_LESSON_FILE, ex);
         } catch(Exception e) {
-            // Log.e(TAG, e.getMessage());
+            Log.e(TAG, "Line:" + line + "; Error: " + e.getMessage());
             throw new DataException(ERROR_CANNOT_READ_LESSON_FILE, e);
         }
         return cards;
