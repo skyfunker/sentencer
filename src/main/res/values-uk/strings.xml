@@ -34,5 +34,6 @@
     <string name="action_goto">Перехiд до...</string>
     <string name="ok">ОК</string>
     <string name="cancel">Скасувати</string>
-    <string name="action_options">Options</string>
+    <string name="action_options">Опцii</string>
+    <string name="msg_no_marked_cards">В уроці немає помiчених карток</string>
 </resources>

@@ -215,6 +215,20 @@ public class CardActivity extends ActionBarActivity {
         this.forceRewind = false;
     }
 
+    /**
+     * Count marked cards in current lesson
+     * @return Number of marked cards
+     */
+    public int countMarked() {
+        int count = 0;
+        Iterator<Card> iterator = this.cards.iterator();
+        while(iterator.hasNext()) {
+            Card c = iterator.next();
+            if(c.isMarked()) { count++; }
+        }
+        return count;
+    }
+
     private void initNavigation() {
         if (this.cardCount > 0) {
             this.btnPrev.setVisibility(this.cardIndex > 0 ? View.VISIBLE : View.INVISIBLE);
@@ -315,9 +329,15 @@ public class CardActivity extends ActionBarActivity {
                 goTo();
                 break;
             case R.id.action_showmarked:
-                this.showMarked = !this.showMarked;
-                item.setChecked(this.showMarked);
-                showMarkedCards();
+                if(!this.showMarked && (countMarked() < 1)) {
+                    Toast.makeText(this, R.string.msg_no_marked_cards,
+                            Toast.LENGTH_LONG).show();
+
+                } else {
+                    this.showMarked = !this.showMarked;
+                    item.setChecked(this.showMarked);
+                    showMarkedCards();
+                }
                 return true;
             case R.id.action_shuffle:
                 this.shuffled = !this.shuffled;

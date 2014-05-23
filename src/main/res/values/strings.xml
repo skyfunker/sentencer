@@ -35,4 +35,5 @@
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
     <string name="action_options">Options</string>
+    <string name="msg_no_marked_cards">There is no marked cards in the lesson</string>
 </resources>
