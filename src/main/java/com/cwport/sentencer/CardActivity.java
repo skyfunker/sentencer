@@ -17,9 +17,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,7 +29,7 @@ import com.cwport.sentencer.data.DataProvider;
 import com.cwport.sentencer.data.FileDataProvider;
 import com.cwport.sentencer.model.Card;
 import com.cwport.sentencer.model.Lesson;
-import com.cwport.sentencer.speak.Speaker;
+import com.cwport.sentencer.media.TextToSpeech;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -66,8 +64,10 @@ public class CardActivity extends ActionBarActivity {
     private boolean forceRewind = false;
     private String textLocale; // text locale of the current card side
     private Set<String> markedCardsIdSet = new HashSet<String>();
+    private ArrayList<String> ttsUrls = new ArrayList<String>();
+    private int ttsCounter = 0;
     DataManager dataManager;
-
+    MediaPlayer mediaPlayer = new MediaPlayer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -235,7 +235,7 @@ public class CardActivity extends ActionBarActivity {
             this.btnFlip.setVisibility(this.cardCount > 0 ? View.VISIBLE : View.INVISIBLE);
             this.btnNext.setVisibility((this.cardIndex + 1) < this.cardCount ? View.VISIBLE : View.INVISIBLE);
             this.setTitle(this.lessonTitle + " (" + (this.cardIndex + 1)  + "/" + this.cardCount + ")");
-            if(Speaker.localeSupported(this.textLocale)) {
+            if(TextToSpeech.localeSupported(this.textLocale)) {
                 this.btnPlay.setVisibility(View.VISIBLE);
             } else {
                 this.btnPlay.setVisibility(View.INVISIBLE);
@@ -507,23 +507,37 @@ public class CardActivity extends ActionBarActivity {
     }
 
     private void textToSpeech(View view, String locale, String text) {
-        String url;
         try {
-            url = "http://translate.google.com/translate_tts?tl=" + locale +
-                    "&q=" + java.net.URLEncoder.encode(text, "UTF-8");
+            ttsUrls = TextToSpeech.textToSpeech(text, locale);
+            ttsCounter = 0;
         } catch(UnsupportedEncodingException uex) {
             Log.e(TAG, uex.getMessage());
-            return;
+            Toast.makeText(getApplicationContext(), "Text-to-speech error: " + uex.getMessage(),
+                    Toast.LENGTH_LONG).show();
         }
-        MediaPlayer mediaPlayer = new MediaPlayer();
+        if(ttsUrls.size() > 0) {
+            playSound();
+        } else {
+            Toast.makeText(getApplicationContext(), "Cannot prepare text-to-speech request",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void playSound() {
+        this.btnPlay.setCompoundDrawablesWithIntrinsicBounds(
+                this.getResources().getDrawable(R.drawable.ic_action_pause),
+                null, null, null);
+        this.btnPlay.setEnabled(false);
+        mediaPlayer.reset();
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-
-                btnPlay.setCompoundDrawablesWithIntrinsicBounds(
-                        getResources().getDrawable(R.drawable.ic_action_play),
-                        null, null, null);
-                btnPlay.setEnabled(true);
+                ttsCounter++;
+                if(ttsCounter < ttsUrls.size()) {
+                    playSound();
+                } else {
+                    refreshPlayer();
+                }
             }
         });
         mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -531,20 +545,14 @@ public class CardActivity extends ActionBarActivity {
             public boolean onError(MediaPlayer mp, int what, int extra) {
                 Toast.makeText(getApplicationContext(), "MediaPlayer error: " + what,
                         Toast.LENGTH_LONG).show();
-                btnPlay.setCompoundDrawablesWithIntrinsicBounds(
-                        getResources().getDrawable(R.drawable.ic_action_play),
-                        null, null, null);
-                btnPlay.setEnabled(true);
+                refreshPlayer();
                 return true;
             }
         });
         try {
-            this.btnPlay.setCompoundDrawablesWithIntrinsicBounds(
-                    this.getResources().getDrawable(R.drawable.ic_action_pause),
-                    null, null, null);
-            this.btnPlay.setEnabled(false);
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setDataSource(url);
+            mediaPlayer.setDataSource(ttsUrls.get(ttsCounter));
+
 //            HashMap<String, String> headers = new HashMap<String, String>();
 //            headers.put("Accept-Language", this.textLocale.replace("_", "-"));
 //            mediaPlayer.setDataSource(this, Uri.parse(url), headers);
@@ -554,10 +562,17 @@ public class CardActivity extends ActionBarActivity {
             Toast.makeText(getApplicationContext(), "MediaPlayer error: " + ex.getLocalizedMessage(),
                     Toast.LENGTH_LONG).show();
             Log.e(TAG, ex.getLocalizedMessage());
-            this.btnPlay.setCompoundDrawablesWithIntrinsicBounds(
-                    this.getResources().getDrawable(R.drawable.ic_action_play),
-                    null, null, null);
-            btnPlay.setEnabled(true);
+            refreshPlayer();
         }
+    }
+
+    private void refreshPlayer() {
+        ttsUrls = new ArrayList<String>();
+        ttsCounter = 0;
+        this.btnPlay.setCompoundDrawablesWithIntrinsicBounds(
+                this.getResources().getDrawable(R.drawable.ic_action_play),
+                null, null, null);
+        btnPlay.setEnabled(true);
+        mediaPlayer.reset();
     }
 }
