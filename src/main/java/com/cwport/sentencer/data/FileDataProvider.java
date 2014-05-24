@@ -152,7 +152,7 @@ public class FileDataProvider implements DataProvider {
             throw new DataException(ERROR_CANNOT_READ_LESSON_FILE, ex);
         } catch(Exception e) {
             Log.e(TAG, "Line:" + line + "; Error: " + e.getMessage());
-            throw new DataException(ERROR_CANNOT_READ_LESSON_FILE, e);
+            throw new DataException(ERROR_CANNOT_READ_LESSON_FILE + "at line " + line, e);
         }
         return cards;
     }

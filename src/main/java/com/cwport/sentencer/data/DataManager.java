@@ -13,13 +13,13 @@ public class DataManager {
     private static DataManager instance;
     private static DataProvider dataProvider;
 
-    private DataManager() {
-        dataProvider = DataProviderFactory.getInstance(ProviderType.FILE);
+    private DataManager(ProviderType providerType) {
+        dataProvider = DataProviderFactory.getInstance(providerType);
     }
 
     public static synchronized DataManager getInstance() {
         if(instance == null) {
-            instance = new DataManager();
+            instance = new DataManager(ProviderType.FILE);
         }
         return instance;
     }
