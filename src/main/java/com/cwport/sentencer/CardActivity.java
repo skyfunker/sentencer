@@ -22,11 +22,12 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cwport.sentencer.data.AssetDataProvider;
 import com.cwport.sentencer.data.DataException;
 import com.cwport.sentencer.data.DataHelper;
 import com.cwport.sentencer.data.DataManager;
 import com.cwport.sentencer.data.DataProvider;
-import com.cwport.sentencer.data.FileDataProvider;
+import com.cwport.sentencer.data.SourceType;
 import com.cwport.sentencer.model.Card;
 import com.cwport.sentencer.model.Lesson;
 import com.cwport.sentencer.media.TextToSpeech;
@@ -108,9 +109,9 @@ public class CardActivity extends ActionBarActivity {
 
         try {
             dataManager = DataManager.getInstance();
-            DataProvider dataProvider = dataManager.getDataProvider();
-            if (dataProvider instanceof FileDataProvider) {
-                ((FileDataProvider) dataProvider).setContext(this);
+            DataProvider dataProvider = dataManager.getDataProvider(SourceType.INTERNAL);
+            if (dataProvider instanceof AssetDataProvider) {
+                ((AssetDataProvider) dataProvider).setContext(this);
             }
             this.lesson = dataManager.getLesson(this.lessonIndex);
 

@@ -1,10 +1,14 @@
 package com.cwport.sentencer.data;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import android.util.Log;
+
 /**
  * Created by isayev on 26.02.14.
  */
@@ -23,6 +27,8 @@ public class DataHelper {
     public static final String PARAM_SHOWBACKFIRST = "showbackfirst";
     public static final String PARAM_MARKED_CARDS = "markedcards";
     public static final String PREF_PREFIX = "com.cwport.sentencer.";
+
+    public static final String QUERY_PARAM_FILE = "file";
 
     /**
      * Use this function to generate MD5 hash for a Card object
@@ -52,6 +58,30 @@ public class DataHelper {
             Log.e(TAG, e.getMessage());
         }
         return "";
+    }
+
+    public static String userLessonFileName(URI uriFile) {
+        String fileName = new String();
+        String query = uriFile.getQuery();
+        if(query != null) {
+            String[] pairs = query.split("&");
+            try {
+                for (String pair : pairs) {
+                    int idx = pair.indexOf("=");
+                    String param = URLDecoder.decode(pair.substring(0, idx), "UTF-8");
+                    String value = URLDecoder.decode(pair.substring(idx + 1), "UTF-8");
+                    if (param == QUERY_PARAM_FILE) fileName = value;
+                }
+            } catch (UnsupportedEncodingException e) {
+                Log.e(TAG, e.getMessage());
+            }
+        } else {
+            // try to get file name from path
+            String path = uriFile.getPath();
+            int lastIdx = path.lastIndexOf("/");
+            fileName = path.substring(lastIdx + 1);
+        }
+        return fileName;
     }
 
 }

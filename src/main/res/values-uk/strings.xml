@@ -36,4 +36,5 @@
     <string name="cancel">Скасувати</string>
     <string name="action_options">Опцii</string>
     <string name="msg_no_marked_cards">В уроці немає помiчених карток</string>
+    <string name="action_scan_code">Scan QR-code</string>
 </resources>

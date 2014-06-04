@@ -1,17 +1,40 @@
 package com.cwport.sentencer.model;
 
+import com.cwport.sentencer.data.SourceType;
+
 import java.util.ArrayList;
 
 /**
  * Created by isayev on 02.02.14.
  */
 public class Lesson {
+    String id;
     String filename;
     String title;
     ArrayList<Card> cards = new ArrayList<Card>();
     String faceLocale;
     String backLocale;
     String description;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+    public SourceType getSourceType() {
+        return sourceType;
+    }
+
+    public void setSourceType(SourceType sourceType) {
+        this.sourceType = sourceType;
+    }
+
+    SourceType sourceType;
+
     int cardCount;
 
     public Lesson() {}

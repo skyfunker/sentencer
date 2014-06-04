@@ -8,6 +8,11 @@
         <!--android:orderInCategory="100"-->
         <!--android:icon="@drawable/ic_action_settings"-->
         <!--app:showAsAction="never" />-->
+    <item android:id="@+id/action_scan_code"
+        android:title="@string/action_scan_code"
+        android:icon="@drawable/ic_action_camera"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom" />
     <item android:id="@+id/action_help"
         android:title="@string/action_help"
         android:icon="@drawable/ic_action_help"

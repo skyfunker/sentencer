@@ -1,7 +1,5 @@
 package com.cwport.sentencer.data;
 
-import android.provider.ContactsContract;
-
 import com.cwport.sentencer.model.Lesson;
 
 import java.util.ArrayList;
@@ -13,18 +11,18 @@ public class DataManager {
     private static DataManager instance;
     private static DataProvider dataProvider;
 
-    private DataManager(ProviderType providerType) {
-        dataProvider = DataProviderFactory.getInstance(providerType);
+    private DataManager() {
     }
 
     public static synchronized DataManager getInstance() {
         if(instance == null) {
-            instance = new DataManager(ProviderType.FILE);
+            instance = new DataManager();
         }
         return instance;
     }
 
-    public DataProvider getDataProvider() {
+    public DataProvider getDataProvider(SourceType sourceType) {
+        dataProvider = DataProviderFactory.getInstance(sourceType);
         return dataProvider;
     }
 

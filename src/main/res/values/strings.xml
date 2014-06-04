@@ -36,4 +36,5 @@
     <string name="cancel">Cancel</string>
     <string name="action_options">Options</string>
     <string name="msg_no_marked_cards">There is no marked cards in the lesson</string>
+    <string name="action_scan_code">Scan QR-code</string>
 </resources>
