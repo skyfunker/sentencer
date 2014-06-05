@@ -17,6 +17,7 @@ public class DataHelper {
 
     public static final String EXTRA_LESSON_TITLE = "lesson_title";
     public static final String EXTRA_LESSON_INDEX = "lesson_index";
+    public static final String EXTRA_LESSON_SOURCE = "lesson_source";
     public static final String EXTRA_LESSON_MODE = "lesson_mode";
 
     public static final String PARAM_LESSON = "currentLesson";

@@ -22,11 +22,9 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cwport.sentencer.data.AssetDataProvider;
 import com.cwport.sentencer.data.DataException;
 import com.cwport.sentencer.data.DataHelper;
 import com.cwport.sentencer.data.DataManager;
-import com.cwport.sentencer.data.DataProvider;
 import com.cwport.sentencer.data.SourceType;
 import com.cwport.sentencer.model.Card;
 import com.cwport.sentencer.model.Lesson;
@@ -45,16 +43,14 @@ public class CardActivity extends ActionBarActivity {
 
     private final String TAG = CardActivity.class.getSimpleName();
     private String lessonTitle;
-    private int lessonIndex;
+    private String lessonId;
+    private SourceType lessonSource;
     private int cardIndex = 0;
     private int cardCount = 0;
     private boolean flip = false;
     private ArrayList<Card> cards = new ArrayList<Card>();
-    private Lesson lesson = new Lesson();
+    private Lesson lesson;
     private TextView textView;
-//    private ImageButton btnNext;
-//    private ImageButton btnFlip;
-//    private ImageButton btnPrev;
     private Button btnNext;
     private Button btnFlip;
     private Button btnPrev;
@@ -67,7 +63,7 @@ public class CardActivity extends ActionBarActivity {
     private Set<String> markedCardsIdSet = new HashSet<String>();
     private ArrayList<String> ttsUrls = new ArrayList<String>();
     private int ttsCounter = 0;
-    DataManager dataManager;
+    private DataManager dataManager;
     MediaPlayer mediaPlayer = new MediaPlayer();
 
     @Override
@@ -77,10 +73,12 @@ public class CardActivity extends ActionBarActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        dataManager = ((SentencerApp)getApplicationContext()).getDataManager();
         // get parameters from intent
         Intent i = getIntent();
-        this.lessonIndex = i.getIntExtra(DataHelper.EXTRA_LESSON_INDEX, 0);
+        this.lessonId = i.getStringExtra(DataHelper.EXTRA_LESSON_INDEX);
         this.lessonTitle = i.getStringExtra(DataHelper.EXTRA_LESSON_TITLE);
+        this.lessonSource = SourceType.values()[i.getIntExtra(DataHelper.EXTRA_LESSON_SOURCE, 0)];
 
         this.textView = (TextView) findViewById(R.id.card_text);
         this.textView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -108,12 +106,7 @@ public class CardActivity extends ActionBarActivity {
         this.btnNext = (Button) findViewById(R.id.button_next);
 
         try {
-            dataManager = DataManager.getInstance();
-            DataProvider dataProvider = dataManager.getDataProvider(SourceType.INTERNAL);
-            if (dataProvider instanceof AssetDataProvider) {
-                ((AssetDataProvider) dataProvider).setContext(this);
-            }
-            this.lesson = dataManager.getLesson(this.lessonIndex);
+            this.lesson = dataManager.getDataProvider(this.lessonSource, getApplicationContext()).getLesson(this.lessonId);
 
             if(savedInstanceState != null) {
                 this.cardIndex = savedInstanceState.getInt(DataHelper.PARAM_CARD_INDEX);

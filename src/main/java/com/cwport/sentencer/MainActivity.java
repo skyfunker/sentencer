@@ -14,13 +14,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cwport.sentencer.data.AssetDataProvider;
-import com.cwport.sentencer.data.InternalDataProvider;
 import com.cwport.sentencer.data.DataException;
 import com.cwport.sentencer.data.DataHelper;
 import com.cwport.sentencer.data.DataManager;
@@ -47,34 +46,40 @@ public class MainActivity extends ActionBarActivity {
     static final String TAG = MainActivity.class.getSimpleName();
     SharedPreferences sharedPref;
     SharedPreferences.Editor sharedPrefEditor;
-    ArrayList<Lesson> lessonList = new ArrayList<Lesson>();
-    DataManager dataManager;
+    ArrayList<Lesson> lessonList;
+    private DataManager dataManager;
     private ProgressDialog ringProgressDialog;
+    private DataProvider assetDataProvider;
+    private DataProvider internalDataProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        dataManager = ((SentencerApp)getApplicationContext()).getDataManager();
 
         ListView listView = (ListView) findViewById(R.id.list_lessons);
         lessonList = new ArrayList<Lesson>();
         try {
-            dataManager = DataManager.getInstance();
-            DataProvider dataProvider = dataManager.getDataProvider(SourceType.INTERNAL);
-            if ((dataProvider instanceof AssetDataProvider)) {
-                ((AssetDataProvider) dataProvider).setContext(this);
+            if(assetDataProvider == null) {
+                assetDataProvider = dataManager.getDataProvider(SourceType.ASSET, getApplicationContext());
             }
-            if(dataProvider instanceof InternalDataProvider) {
-                ((InternalDataProvider) dataProvider).setContext(this);
+            if(internalDataProvider == null) {
+                internalDataProvider = dataManager.getDataProvider(SourceType.INTERNAL, getApplicationContext());
             }
-            lessonList = dataManager.getLessons();
+            if(lessonList.isEmpty()) {
+                lessonList = internalDataProvider.getLessons();
+                lessonList.addAll(assetDataProvider.getLessons());
+            }
 
         } catch(DataException de) {
             Log.e(TAG, de.getMessage());
             Toast.makeText(getApplicationContext(), de.getMessage(), Toast.LENGTH_LONG).show();
         }
-        listView.setAdapter(new LessonAdapter(this));
+        LessonAdapter adapter = new LessonAdapter(lessonList);
+        adapter.notifyDataSetChanged();
+        listView.setAdapter(adapter);
 
         // listening to single list item on click
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -86,10 +91,11 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void startLesson(int lessonIndex) {
-        Intent i = new Intent(getApplicationContext(), CardActivity.class);
         // sending data to new activity
-        i.putExtra(DataHelper.EXTRA_LESSON_INDEX, lessonIndex);
+        Intent i = new Intent(getApplicationContext(), CardActivity.class);
+        i.putExtra(DataHelper.EXTRA_LESSON_INDEX, lessonList.get(lessonIndex).getId());
         i.putExtra(DataHelper.EXTRA_LESSON_TITLE, lessonList.get(lessonIndex).getTitle());
+        i.putExtra(DataHelper.EXTRA_LESSON_SOURCE, lessonList.get(lessonIndex).getSourceType().ordinal());
         startActivity(i);
     }
 
@@ -147,45 +153,33 @@ public class MainActivity extends ActionBarActivity {
     /**
      * LessonAdapter is intended to provide a list of incorporated lessons from assets
      */
-    public class LessonAdapter extends BaseAdapter {
-        private LayoutInflater layoutInflater;
-        private Context mainContext;
-
-        public LessonAdapter(Context ctx) {
-            mainContext = ctx;
-            layoutInflater = LayoutInflater.from(ctx);
+    private class LessonAdapter extends ArrayAdapter<Lesson> {
+//        private LayoutInflater layoutInflater;
+//        private Context mainContext;
+        private ArrayList<Lesson> lessons;
+        public LessonAdapter(ArrayList<Lesson> list) {
+            super(MainActivity.this, R.layout.list_item, list);
+            lessons = list;
         }
 
-        public int getCount() {
-            int count = 0;
-            if(lessonList != null) count = lessonList.size();
-            return count;
-        }
-
-        public Object getItem (int position) {
-            return position;
-        }
-
-        public long getItemId (int position) {
-            return position;
-        }
-
-        public String getString (int position) {
-            Lesson lesson = lessonList.get(position);
-            return "Title:" + lesson.getTitle() + ";" + lesson.getFaceLocale() + " to " + lesson.getFaceLocale();
-        }
         public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null)
-                convertView = layoutInflater.inflate(R.layout.list_item, null);
-
-            Lesson lesson = lessonList.get(position);
-            TextView title = (TextView)convertView.findViewById(R.id.lesson_title);
+            View row;
+            final Lesson lesson = lessons.get(position);
+            if (convertView == null) {
+                row = getLayoutInflater().inflate(R.layout.list_item, null);
+            } else {
+                row = convertView;
+            }
+            TextView title = (TextView)row.findViewById(R.id.lesson_title);
             title.setText(lesson.getTitle());
 
-            TextView meta = (TextView)convertView.findViewById(R.id.lesson_meta);
-            meta.setText(lesson.getDescription() + " (" + mainContext.getString(R.string.label_cards) + ": " + lesson.getCardCount() + ")");
+            TextView meta = (TextView)row.findViewById(R.id.lesson_meta);
 
-            return convertView;
+            meta.setText(lesson.getDescription() + " ("
+                    + MainActivity.this.getString(R.string.label_cards) +
+                    ": " + lesson.getCardCount() + ")");
+
+            return row;
         }
     }
 

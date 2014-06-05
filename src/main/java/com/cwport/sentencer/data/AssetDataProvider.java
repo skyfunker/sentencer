@@ -29,7 +29,7 @@ public class AssetDataProvider implements DataProvider {
 
     private String lessonFolder = DEFAULT_LESSON_FOLDER;
     private String lessonIndex = DEFAULT_LESSON_INDEX_FILE;
-    private ArrayList<Lesson> lessons = null;
+    private ArrayList<Lesson> lessons = new ArrayList<Lesson>();
     private String[] lessonTitles = new String[]{};
 
     private Context context;
@@ -42,40 +42,25 @@ public class AssetDataProvider implements DataProvider {
     }
 
     @Override
-    public String[] getLessonTitles() throws DataException {
-        if(lessons == null) {
-            readLessonIndex();
-        }
-        if(lessonTitles.length != lessons.size()) {
-            lessonTitles = new String[lessons.size()];
-            for (int i = 0; i < lessons.size(); i++) {
-                lessonTitles[i] = lessons.get(i).getTitle();
-            }
-        }
-        return lessonTitles;
-    }
-
-    @Override
     public ArrayList<Lesson> getLessons() throws DataException {
-        if(lessons == null) {
-            readLessonIndex();
-        }
+        readLessonIndex();
         return lessons;
     }
 
     @Override
-    public Lesson getLesson(int index) throws DataException {
-        Lesson lesson;
-        if(lessons == null) {
-            readLessonIndex();
+    public Lesson getLesson(String id) throws DataException {
+        Lesson lesson = new Lesson();
+        for(Lesson l : lessons) {
+            if(id.equals(l.getId())) {
+                lesson = l;
+                break;
+            }
         }
-        if(index > (lessons.size() - 1)) {
-            throw new DataException(ERROR_LESSON_NOT_EXIST);
-        }
-        lesson = lessons.get(index);
-        if(lesson.getCards().size() == 0) {
+        if(id.equals(lesson.getId())) {
             String data = getLessonData(lesson.getFilename());
             lesson.setCards(parseLessonData(data));
+        } else {
+            throw new DataException(ERROR_LESSON_NOT_EXIST);
         }
         return lesson;
     }
@@ -83,6 +68,7 @@ public class AssetDataProvider implements DataProvider {
     private void readLessonIndex() throws DataException {
         String lessonData = "";
         InputStream stream = null;
+        lessons = new ArrayList<Lesson>();
         try {
             stream = context.getAssets().open(lessonFolder + "/" + lessonIndex);
             int size = stream.available();

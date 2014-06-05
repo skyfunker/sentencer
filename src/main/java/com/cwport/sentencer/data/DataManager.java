@@ -1,5 +1,7 @@
 package com.cwport.sentencer.data;
 
+import android.content.Context;
+
 import com.cwport.sentencer.model.Lesson;
 
 import java.util.ArrayList;
@@ -8,34 +10,25 @@ import java.util.ArrayList;
  * Created by isayev on 10.03.14.
  */
 public class DataManager {
-    private static DataManager instance;
-    private static DataProvider dataProvider;
+    private DataProvider internalDataProvider;
+    private DataProvider assetDataProvider;
 
-    private DataManager() {
+    public DataManager() {
     }
 
-    public static synchronized DataManager getInstance() {
-        if(instance == null) {
-            instance = new DataManager();
+    public DataProvider getDataProvider(SourceType sourceType, Context context) {
+        if(sourceType == SourceType.INTERNAL) {
+            if (internalDataProvider == null) {
+                internalDataProvider = DataProviderFactory.getInstance(SourceType.INTERNAL);
+                internalDataProvider.setContext(context);
+            }
+            return internalDataProvider;
+        } else {
+            if (assetDataProvider == null) {
+                assetDataProvider = DataProviderFactory.getInstance(SourceType.ASSET);
+                assetDataProvider.setContext(context);
+            }
+            return assetDataProvider;
         }
-        return instance;
     }
-
-    public DataProvider getDataProvider(SourceType sourceType) {
-        dataProvider = DataProviderFactory.getInstance(sourceType);
-        return dataProvider;
-    }
-
-    public String[] getLessonTitles() throws DataException {
-        return dataProvider.getLessonTitles();
-    }
-
-    public ArrayList<Lesson> getLessons() throws DataException {
-        return dataProvider.getLessons();
-    }
-
-    public Lesson getLesson(int index) throws DataException {
-        return dataProvider.getLesson(index);
-    }
-
 }
