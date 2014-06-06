@@ -37,4 +37,7 @@
     <string name="action_options">Опции</string>
     <string name="msg_no_marked_cards">В уроке нет отмеченных карточек</string>
     <string name="action_scan_code">Scan QR-code</string>
+    <string name="action_add_user_lesson">User lesson</string>
+    <string name="please_wait">Please wait ...</string>
+    <string name="download_lesson_file">Downloading lesson file...</string>
 </resources>

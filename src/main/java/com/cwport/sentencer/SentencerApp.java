@@ -8,6 +8,7 @@ import com.cwport.sentencer.data.DataManager;
  * Created by ais on 05.06.2014.
  */
 public class SentencerApp extends Application {
+    public static boolean DEBUG = true;
     private DataManager dataManager = new DataManager();
 
     public DataManager getDataManager() {

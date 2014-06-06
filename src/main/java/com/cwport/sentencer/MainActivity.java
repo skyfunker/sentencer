@@ -8,14 +8,13 @@ import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +50,8 @@ public class MainActivity extends ActionBarActivity {
     private ProgressDialog ringProgressDialog;
     private DataProvider assetDataProvider;
     private DataProvider internalDataProvider;
+    LessonAdapter listAdapter;
+    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,28 +60,8 @@ public class MainActivity extends ActionBarActivity {
 
         dataManager = ((SentencerApp)getApplicationContext()).getDataManager();
 
-        ListView listView = (ListView) findViewById(R.id.list_lessons);
-        lessonList = new ArrayList<Lesson>();
-        try {
-            if(assetDataProvider == null) {
-                assetDataProvider = dataManager.getDataProvider(SourceType.ASSET, getApplicationContext());
-            }
-            if(internalDataProvider == null) {
-                internalDataProvider = dataManager.getDataProvider(SourceType.INTERNAL, getApplicationContext());
-            }
-            if(lessonList.isEmpty()) {
-                lessonList = internalDataProvider.getLessons();
-                lessonList.addAll(assetDataProvider.getLessons());
-            }
-
-        } catch(DataException de) {
-            Log.e(TAG, de.getMessage());
-            Toast.makeText(getApplicationContext(), de.getMessage(), Toast.LENGTH_LONG).show();
-        }
-        LessonAdapter adapter = new LessonAdapter(lessonList);
-        adapter.notifyDataSetChanged();
-        listView.setAdapter(adapter);
-
+        listView = (ListView) findViewById(R.id.list_lessons);
+        buildLessonList();
         // listening to single list item on click
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
@@ -114,7 +95,7 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch(id) {
-            case R.id.action_scan_code:
+            case R.id.action_add_user_lesson:
                 scanLessonCode();
                 return true;
             case R.id.action_help:
@@ -134,6 +115,29 @@ public class MainActivity extends ActionBarActivity {
             Log.e(TAG, "Scan error result code: " + resultCode);
             Toast.makeText(this, "No data scanned", Toast.LENGTH_LONG);
         }
+    }
+
+    private void buildLessonList() {
+        lessonList = new ArrayList<Lesson>();
+        try {
+            if(assetDataProvider == null) {
+                assetDataProvider = dataManager.getDataProvider(SourceType.ASSET, getApplicationContext());
+            }
+            if(internalDataProvider == null) {
+                internalDataProvider = dataManager.getDataProvider(SourceType.INTERNAL, getApplicationContext());
+            }
+            if(lessonList.isEmpty()) {
+                lessonList = internalDataProvider.getLessons();
+                lessonList.addAll(assetDataProvider.getLessons());
+            }
+
+        } catch(DataException de) {
+            Log.e(TAG, de.getMessage());
+            Toast.makeText(getApplicationContext(), de.getMessage(), Toast.LENGTH_LONG).show();
+        }
+        listAdapter = new LessonAdapter(lessonList);
+        listAdapter.notifyDataSetChanged();
+        listView.setAdapter(listAdapter);
     }
 
     private void downloadLesson(String fileUrl) {
@@ -166,9 +170,15 @@ public class MainActivity extends ActionBarActivity {
             View row;
             final Lesson lesson = lessons.get(position);
             if (convertView == null) {
-                row = getLayoutInflater().inflate(R.layout.list_item, null);
+                row = getLayoutInflater().inflate(R.layout.list_item_lesson, null);
             } else {
                 row = convertView;
+            }
+            ImageView icon = (ImageView) row.findViewById(R.id.icon);
+            if(lesson.getSourceType() == SourceType.INTERNAL) {
+                icon.setImageResource(R.drawable.ic_action_person);
+            } else {
+                icon.setImageResource(R.drawable.ic_action_attachment);
             }
             TextView title = (TextView)row.findViewById(R.id.lesson_title);
             title.setText(lesson.getTitle());
@@ -187,7 +197,8 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPreExecute() {
             ringProgressDialog = ProgressDialog.show(MainActivity.this,
-                    "Please wait ...", "Downloading lesson file...", true);
+                    MainActivity.this.getString(R.string.please_wait),
+                    MainActivity.this.getString(R.string.download_lesson_file), true);
             ringProgressDialog.setCancelable(true);
         }
 
@@ -196,7 +207,6 @@ public class MainActivity extends ActionBarActivity {
             String url = params[0];
             InputStream inputStream;
             String fileName = null;
-            byte[] data = new byte[0];
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             try {
                 HttpClient httpClient = new DefaultHttpClient();
@@ -211,10 +221,12 @@ public class MainActivity extends ActionBarActivity {
                     if (r == -1) break;
                     outputStream.write(buffer, 0, r);
                 }
-                data = outputStream.toByteArray();
+                byte[] data = outputStream.toByteArray();
                 FileOutputStream fileOutputStream;
                 fileName = DataHelper.userLessonFileName(uriFile);
-                Log.i(TAG, "Create file " + getFilesDir() + "/" + fileName);
+                if(SentencerApp.DEBUG) {
+                    Log.i(TAG, "Create file " + getFilesDir() + "/" + fileName);
+                }
                 fileOutputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
                 fileOutputStream.write(data);
                 fileOutputStream.close();
@@ -227,6 +239,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(String internalFile) {
             if(ringProgressDialog.isShowing()) ringProgressDialog.dismiss();
+            buildLessonList();
         }
 
         @Override
