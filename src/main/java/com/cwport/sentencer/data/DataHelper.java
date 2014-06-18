@@ -20,6 +20,8 @@ public class DataHelper {
     public static final String EXTRA_LESSON_SOURCE = "lesson_source";
     public static final String EXTRA_LESSON_MODE = "lesson_mode";
 
+    public static final String PARAM_LESSON_ID = "lesson_id";
+    public static final String PARAM_LESSON_SOURCE = "lesson_source";
     public static final String PARAM_LESSON = "currentLesson";
     public static final String PARAM_CARD_INDEX = "cardIndex";
     public static final String PARAM_FLIP = "flip";

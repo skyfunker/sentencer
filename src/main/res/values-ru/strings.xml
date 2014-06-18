@@ -36,8 +36,10 @@
     <string name="cancel">Отменить</string>
     <string name="action_options">Опции</string>
     <string name="msg_no_marked_cards">В уроке нет отмеченных карточек</string>
-    <string name="action_scan_code">Scan QR-code</string>
-    <string name="action_add_user_lesson">User lesson</string>
-    <string name="please_wait">Please wait ...</string>
-    <string name="download_lesson_file">Downloading lesson file...</string>
+    <string name="action_scan_code">Сканировать QR-код</string>
+    <string name="action_add_user_lesson">Загрузить урок</string>
+    <string name="please_wait">Подождите, пожалуйста</string>
+    <string name="download_lesson_file">Загрузка файла...</string>
+    <string name="tab_asset_lessons">Стандартные</string>
+    <string name="tab_my_lessons">Мои уроки</string>
 </resources>

@@ -106,9 +106,9 @@ public class CardActivity extends ActionBarActivity {
         this.btnNext = (Button) findViewById(R.id.button_next);
 
         try {
-            this.lesson = dataManager.getDataProvider(this.lessonSource, getApplicationContext()).getLesson(this.lessonId);
-
             if(savedInstanceState != null) {
+                this.lessonId = savedInstanceState.getString(DataHelper.PARAM_LESSON_ID);
+                this.lessonSource = SourceType.values()[savedInstanceState.getInt(DataHelper.PARAM_LESSON_SOURCE)];
                 this.cardIndex = savedInstanceState.getInt(DataHelper.PARAM_CARD_INDEX);
                 this.flip = savedInstanceState.getBoolean(DataHelper.PARAM_FLIP);
                 this.shuffled = savedInstanceState.getBoolean(DataHelper.PARAM_SHUFFLED);
@@ -117,16 +117,17 @@ public class CardActivity extends ActionBarActivity {
                 String markedCardIdArray[] = savedInstanceState.getStringArray(DataHelper.PARAM_MARKED_CARDS);
                 this.markedCardsIdSet = new HashSet<String>();
                 Collections.addAll(this.markedCardsIdSet, markedCardIdArray);
-            } else {
-                SharedPreferences sharedPref = this.getSharedPreferences(
-                        DataHelper.PREF_PREFIX + this.lesson.getFilename(), Context.MODE_PRIVATE);
-                this.cardIndex = sharedPref.getInt(DataHelper.PARAM_CARD_INDEX, 0);
-                this.shuffled = sharedPref.getBoolean(DataHelper.PARAM_SHUFFLED, false);
-                this.showMarked = sharedPref.getBoolean(DataHelper.PARAM_SHOWMARKED, false);
-                this.showBackFirst = sharedPref.getBoolean(DataHelper.PARAM_SHOWBACKFIRST, false);
-                this.markedCardsIdSet = sharedPref.getStringSet(DataHelper.PARAM_MARKED_CARDS, new HashSet<String>());
-                this.flip = this.showBackFirst;
             }
+
+            this.lesson = dataManager.getDataProvider(this.lessonSource, getApplicationContext()).getLesson(this.lessonId);
+            SharedPreferences sharedPref = this.getSharedPreferences(
+                    DataHelper.PREF_PREFIX + this.lesson.getFilename(), Context.MODE_PRIVATE);
+            this.cardIndex = sharedPref.getInt(DataHelper.PARAM_CARD_INDEX, 0);
+            this.shuffled = sharedPref.getBoolean(DataHelper.PARAM_SHUFFLED, false);
+            this.showMarked = sharedPref.getBoolean(DataHelper.PARAM_SHOWMARKED, false);
+            this.showBackFirst = sharedPref.getBoolean(DataHelper.PARAM_SHOWBACKFIRST, false);
+            this.markedCardsIdSet = sharedPref.getStringSet(DataHelper.PARAM_MARKED_CARDS, new HashSet<String>());
+            this.flip = this.showBackFirst;
 
             initCards();
             showCard();
@@ -143,8 +144,11 @@ public class CardActivity extends ActionBarActivity {
     @Override
     protected void onSaveInstanceState(Bundle bundle) {
         super.onSaveInstanceState(bundle);
+        bundle.putString(DataHelper.PARAM_LESSON_ID, this.lessonId);
+        bundle.putInt(DataHelper.PARAM_LESSON_SOURCE, this.lessonSource.ordinal());
         bundle.putString(DataHelper.PARAM_LESSON, lessonTitle);
         bundle.putInt(DataHelper.PARAM_CARD_INDEX, this.cardIndex);
+
         bundle.putBoolean(DataHelper.PARAM_FLIP, this.flip);
         bundle.putBoolean(DataHelper.PARAM_SHUFFLED, this.shuffled);
         bundle.putBoolean(DataHelper.PARAM_SHOWMARKED, this.showMarked);
