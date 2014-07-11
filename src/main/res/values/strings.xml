@@ -47,5 +47,6 @@
     <string name="title_activity_asset_lesson">AssetLessonActivity</string>
     <string name="tab_asset_lessons">Standard</string>
     <string name="tab_my_lessons">My lessons</string>
+    <string name="delete_user_lesson">Delete lesson</string>
 
 </resources>

@@ -4,13 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -96,23 +96,31 @@ public class UserLessonFragment extends Fragment {
     private class LessonAdapter extends ArrayAdapter<Lesson> {
         private ArrayList<Lesson> lessons;
         public LessonAdapter(ArrayList<Lesson> list) {
-            super(UserLessonFragment.this.getActivity(), R.layout.list_item_lesson, list);
+            super(UserLessonFragment.this.getActivity(), R.layout.list_item_user_lesson, list);
             lessons = list;
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
             View row;
+            CheckBox checkBox;
             final Lesson lesson = lessons.get(position);
             if (convertView == null) {
-                row = UserLessonFragment.this.layoutInflater.inflate(R.layout.list_item_lesson, null);
+                row = UserLessonFragment.this.layoutInflater.inflate(R.layout.list_item_user_lesson, null);
             } else {
                 row = convertView;
             }
-            ImageView icon = (ImageView) row.findViewById(R.id.icon);
-            icon.setImageResource(R.drawable.ic_action_person);
+//            ImageView icon = (ImageView) row.findViewById(R.id.icon);
+//            icon.setImageResource(R.drawable.ic_action_person);
             TextView title = (TextView)row.findViewById(R.id.lesson_title);
             title.setText(lesson.getTitle());
-
+            checkBox = (CheckBox) row.findViewById(R.id.checkbox_lesson);
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        CheckBox cb = (CheckBox) view;
+                    }
+                }
+            );
             TextView meta = (TextView)row.findViewById(R.id.lesson_meta);
 
             meta.setText(lesson.getDescription() + " ("

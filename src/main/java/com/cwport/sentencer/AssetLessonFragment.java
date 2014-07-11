@@ -3,7 +3,6 @@ package com.cwport.sentencer;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -91,7 +90,7 @@ public class AssetLessonFragment extends Fragment {
     private class LessonAdapter extends ArrayAdapter<Lesson> {
         private ArrayList<Lesson> lessons;
         public LessonAdapter(ArrayList<Lesson> list) {
-            super(AssetLessonFragment.this.getActivity(), R.layout.list_item_lesson, list);
+            super(AssetLessonFragment.this.getActivity(), R.layout.list_item_user_lesson, list);
             lessons = list;
         }
 
@@ -99,7 +98,7 @@ public class AssetLessonFragment extends Fragment {
             View row;
             final Lesson lesson = lessons.get(position);
             if (convertView == null) {
-                row = AssetLessonFragment.this.layoutInflater.inflate(R.layout.list_item_lesson, null);
+                row = AssetLessonFragment.this.layoutInflater.inflate(R.layout.list_item_user_lesson, null);
             } else {
                 row = convertView;
             }

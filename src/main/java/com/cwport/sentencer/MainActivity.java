@@ -168,7 +168,7 @@ public class MainActivity extends ActionBarActivity {
 //        private Context mainContext;
         private ArrayList<Lesson> lessons;
         public LessonAdapter(ArrayList<Lesson> list) {
-            super(MainActivity.this, R.layout.list_item_lesson, list);
+            super(MainActivity.this, R.layout.list_item_user_lesson, list);
             lessons = list;
         }
 
@@ -176,7 +176,7 @@ public class MainActivity extends ActionBarActivity {
             View row;
             final Lesson lesson = lessons.get(position);
             if (convertView == null) {
-                row = getLayoutInflater().inflate(R.layout.list_item_lesson, null);
+                row = getLayoutInflater().inflate(R.layout.list_item_user_lesson, null);
             } else {
                 row = convertView;
             }

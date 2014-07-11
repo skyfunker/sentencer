@@ -42,4 +42,5 @@
     <string name="download_lesson_file">Завантаження файла ...</string>
     <string name="tab_asset_lessons">Стандартнi</string>
     <string name="tab_my_lessons">Мої уроки</string>
+    <string name="delete_user_lesson">Delete lesson</string>
 </resources>
